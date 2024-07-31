@@ -29,19 +29,19 @@ Before starting, make sure you have the following programs installed:
 
 ## Setting Up the Project in Android Studio
 
-1. ** Open Android Studio **
+1. **Open Android Studio**
    Launch Android Studio from your applications menu or from the terminal.
-2. ** Import the Project **
+2. **Import the Project**
    On the Android Studio welcome screen, select "Open an existing Android Studio project".
    Navigate to the project directory you cloned in the previous step and select it.
 
-3. ** Sync Gradle **
+3. ** ync Gradle**
    Android Studio should automatically start syncing the project. If it doesn’t, you can do it manually by selecting File > Sync Project with Gradle Files.
 
 ## Running the Application
 
-** Select Device **
+**Select Device**
    In the Android Studio toolbar, select the device or emulator on which you want to run the application.
 
-** Build and Run **
+**Build and Run**
    Click the Run button (the green triangle icon) or use the shortcut Shift + F10 to build and run the application on the selected device.
