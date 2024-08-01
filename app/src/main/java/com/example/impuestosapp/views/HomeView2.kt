@@ -24,15 +24,11 @@ import com.example.impuestosapp.components.MainButton
 import com.example.impuestosapp.components.MainTextField
 import com.example.impuestosapp.components.SpaceH
 import com.example.impuestosapp.components.ThreeCards
-import com.example.impuestosapp.components.calcularAranceles
-import com.example.impuestosapp.components.calcularIVA
-import com.example.impuestosapp.components.calcularPrecio
-import com.example.impuestosapp.viewModels.CalcularViewModel1
-import kotlin.time.Duration.Companion.seconds
+import com.example.impuestosapp.viewModels.CalcularViewModel2
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeView(viewModel1: CalcularViewModel1) {
+fun HomeView2(viewModel2: CalcularViewModel2) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -43,12 +39,12 @@ fun HomeView(viewModel1: CalcularViewModel1) {
             )
         }
     ) {
-        ContentHomeView(it, viewModel1)
+        ContentHomeView2(it, viewModel2)
     }
 };
 
 @Composable
-fun ContentHomeView(paddingValues: PaddingValues, viewModel1: CalcularViewModel1) {
+fun ContentHomeView2(paddingValues: PaddingValues, viewModel2: CalcularViewModel2) {
     Column(modifier = Modifier
         .padding(paddingValues)
         .padding(10.dp)
@@ -56,56 +52,38 @@ fun ContentHomeView(paddingValues: PaddingValues, viewModel1: CalcularViewModel1
         // verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        var precio by remember { mutableStateOf("") }
-        var iva by remember { mutableStateOf("") }
-        var arancel by remember { mutableStateOf("") }
-        var precioIVA by remember { mutableStateOf(0.0) }
-        var precioAranceles by remember { mutableStateOf(0.0) }
-        var totalImpuesto by remember { mutableStateOf(0.0) }
-        var showAlert by remember { mutableStateOf(false) }
 
         ThreeCards(
             title1 = "Total",
-            number1 = totalImpuesto,
+            number1 = viewModel2.totalImpuesto,
             title2 = "IVA",
-            number2 = precioIVA,
+            number2 = viewModel2.precioIVA,
             title3 = "Aranceles",
-            number3 = precioAranceles
+            number3 = viewModel2.precioAranceles
         )
 
-        MainTextField(value = precio, onValueChange = { precio = it }, label = "Precio")
+        MainTextField(value = viewModel2.precio, onValueChange = { viewModel2.onValuePrecio(it) }, label = "Precio")
         SpaceH()
-        MainTextField(value = iva, onValueChange = { iva = it }, label = "% IVA")
+        MainTextField(value = viewModel2.iva, onValueChange = { viewModel2.onValue(it, "iva") }, label = "% IVA")
         SpaceH()
-        MainTextField(value = arancel, onValueChange = { arancel = it }, label = "% Aranceles")
+        MainTextField(value = viewModel2.arancel, onValueChange = { viewModel2.onValue(it, "arancel") }, label = "% Aranceles")
         SpaceH(10.dp)
 
         MainButton(text = "Generar Impuestos") {
-            val result = viewModel1.calcular(precio, iva, arancel)
-            showAlert = result.second.second.second
-            if (!showAlert){
-                precioAranceles = result.second.second.first
-                precioIVA = result.second.first
-                totalImpuesto = result.first
-            }
+            viewModel2.calcular()
         }
         SpaceH()
 
         MainButton(text = "Limpiar", color = Color.Red) {
-            precio = ""
-            iva = ""
-            arancel = ""
-            precioIVA = 0.00
-            precioAranceles = 0.00
-            totalImpuesto = 0.00
+            viewModel2.limpiar()
         }
 
-        if (showAlert){
+        if (viewModel2.showAlert){
             Alert(
                 title = "Alerta",
                 message = "Debes llenar todos los campos",
                 confirmText = "Aceptar",
-                onConfirmClick = { showAlert = false },
+                onConfirmClick = { viewModel2.cancelAlert() },
             ) {}
         }
     }

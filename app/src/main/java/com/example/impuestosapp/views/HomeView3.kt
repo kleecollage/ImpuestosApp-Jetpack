@@ -11,10 +11,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,15 +20,11 @@ import com.example.impuestosapp.components.MainButton
 import com.example.impuestosapp.components.MainTextField
 import com.example.impuestosapp.components.SpaceH
 import com.example.impuestosapp.components.ThreeCards
-import com.example.impuestosapp.components.calcularAranceles
-import com.example.impuestosapp.components.calcularIVA
-import com.example.impuestosapp.components.calcularPrecio
-import com.example.impuestosapp.viewModels.CalcularViewModel1
-import kotlin.time.Duration.Companion.seconds
+import com.example.impuestosapp.viewModels.CalcularViewModel3
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeView(viewModel1: CalcularViewModel1) {
+fun HomeView3(viewModel3: CalcularViewModel3) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -43,12 +35,12 @@ fun HomeView(viewModel1: CalcularViewModel1) {
             )
         }
     ) {
-        ContentHomeView(it, viewModel1)
+        ContentHomeView3(it, viewModel3)
     }
 };
 
 @Composable
-fun ContentHomeView(paddingValues: PaddingValues, viewModel1: CalcularViewModel1) {
+fun ContentHomeView3(paddingValues: PaddingValues, viewModel3: CalcularViewModel3) {
     Column(modifier = Modifier
         .padding(paddingValues)
         .padding(10.dp)
@@ -56,56 +48,40 @@ fun ContentHomeView(paddingValues: PaddingValues, viewModel1: CalcularViewModel1
         // verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        var precio by remember { mutableStateOf("") }
-        var iva by remember { mutableStateOf("") }
-        var arancel by remember { mutableStateOf("") }
-        var precioIVA by remember { mutableStateOf(0.0) }
-        var precioAranceles by remember { mutableStateOf(0.0) }
-        var totalImpuesto by remember { mutableStateOf(0.0) }
-        var showAlert by remember { mutableStateOf(false) }
+
+        val state = viewModel3.state
 
         ThreeCards(
             title1 = "Total",
-            number1 = totalImpuesto,
+            number1 = state.totalImpuesto,
             title2 = "IVA",
-            number2 = precioIVA,
+            number2 = state.precioIVA,
             title3 = "Aranceles",
-            number3 = precioAranceles
+            number3 = state.precioAranceles
         )
 
-        MainTextField(value = precio, onValueChange = { precio = it }, label = "Precio")
+        MainTextField(value = state.precio, onValueChange = { viewModel3.onValue(it, "precio") }, label = "Precio")
         SpaceH()
-        MainTextField(value = iva, onValueChange = { iva = it }, label = "% IVA")
+        MainTextField(value = state.iva, onValueChange = { viewModel3.onValue(it, "iva") }, label = "% IVA")
         SpaceH()
-        MainTextField(value = arancel, onValueChange = { arancel = it }, label = "% Aranceles")
+        MainTextField(value = state.arancel, onValueChange = { viewModel3.onValue(it, "arancel") }, label = "% Aranceles")
         SpaceH(10.dp)
 
         MainButton(text = "Generar Impuestos") {
-            val result = viewModel1.calcular(precio, iva, arancel)
-            showAlert = result.second.second.second
-            if (!showAlert){
-                precioAranceles = result.second.second.first
-                precioIVA = result.second.first
-                totalImpuesto = result.first
-            }
+            viewModel3.calcular()
         }
         SpaceH()
 
         MainButton(text = "Limpiar", color = Color.Red) {
-            precio = ""
-            iva = ""
-            arancel = ""
-            precioIVA = 0.00
-            precioAranceles = 0.00
-            totalImpuesto = 0.00
+            viewModel3.limpiar()
         }
 
-        if (showAlert){
+        if (state.showAlert){
             Alert(
                 title = "Alerta",
                 message = "Debes llenar todos los campos",
                 confirmText = "Aceptar",
-                onConfirmClick = { showAlert = false },
+                onConfirmClick = { viewModel3.cancelAlert() },
             ) {}
         }
     }
